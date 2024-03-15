@@ -12,9 +12,10 @@ type Cart = {
         size: CartItem['size'];
     }) => void;
     updateQuantity: (ItemId: string, quantity: 1 | -1) => void;
+    total: number;
 };
 
-export const CartCotext = createContext<Cart>({items: [], addItem: () => {}, updateQuantity: () => {}});
+export const CartCotext = createContext<Cart>({items: [], addItem: () => {}, updateQuantity: () => {}, total: 0});
 
 export const useCart = () => useContext(CartCotext);
 
@@ -56,8 +57,12 @@ const CartProvider = ({ children }: { children: ReactNode }) => {
         );
     };
 
+    const total = Math.round(items.reduce((acc, item) => {
+        return acc + item.product.price * item.quantity;
+    }, 0) * 100) / 100;
+
     return (
-        <CartCotext.Provider value={{ items, addItem, updateQuantity }}>
+        <CartCotext.Provider value={{ items, addItem, updateQuantity, total }}>
             {children}
         </CartCotext.Provider>
     );
