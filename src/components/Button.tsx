@@ -1,18 +1,21 @@
-import { Pressable, PressableProps, StyleSheet } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { Text } from './Themed';
 import Colors from '../constants/Colors';
+import { ComponentPropsWithRef, forwardRef } from 'react';
 
-type ButtonProps = PressableProps & {
+type ButtonProps = ComponentPropsWithRef<typeof Pressable> & {
     text: String;
 };
 
-const Button = ({ text, onPress, ...rest }: ButtonProps) => {
+//? I don't know how this works
+const Button = forwardRef<View | null, ButtonProps>(({ text, ...pressableProps}, ref) => {
     return (
-        <Pressable onPress={onPress} style={styles.container}>
+        <Pressable {...pressableProps} ref={ref} style={styles.container}>
             <Text style={styles.text}>{text}</Text>
         </Pressable>
     );
-};
+});
+
 
 const styles = StyleSheet.create({
     container: {
