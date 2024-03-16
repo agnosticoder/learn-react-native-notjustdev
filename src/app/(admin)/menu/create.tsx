@@ -3,16 +3,18 @@ import { defaultPizzaImage } from '@/src/components/ProductListItem';
 import { Text, View } from '@/src/components/Themed';
 import Colors from '@/src/constants/Colors';
 import { useState } from 'react';
-import { Image, Keyboard, StyleSheet, TextInput, TouchableWithoutFeedback } from 'react-native';
+import { Alert, Image, Keyboard, StyleSheet, TextInput, TouchableWithoutFeedback } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import { set } from 'zod';
-import { Stack } from 'expo-router';
+import { Stack, useLocalSearchParams } from 'expo-router';
 
 const CreateProductScreeen = () => {
     const [name, setName] = useState('');
     const [price, setPrice] = useState('');
     const [error, setError] = useState('');
     const [image, setImage] = useState<string | null>(null);
+    const { id } = useLocalSearchParams();
+
+    const isUpdating = !!id;
 
     const resetFields = () => {
         setName('');
@@ -45,9 +47,38 @@ const CreateProductScreeen = () => {
         if (!validateInput()) return;
 
         //Save in the Database
+        console.log('Creating Product', { name, price, image });
 
         resetFields();
     };
+
+    const onUpdate = () => {
+        if (!validateInput()) return;
+
+        //Save in the Database
+        console.log('Updating Product', { id, name, price, image });
+
+        resetFields();
+    };
+
+    const onDelete = () => {
+        console.log('Deleting Product', id);
+    }
+
+    const onConfirmDelete = () => {
+       Alert.alert('Delete Product', 'Are you sure you want to delete this product?', [
+              {text: 'Cancel'},
+              {text: 'Delete', style: 'destructive', onPress: onDelete}
+         ]);
+    };
+
+    const onSubmit =  () => {
+        if(isUpdating) {
+            onUpdate();
+        } else {
+            onCreate();
+        }
+    }
 
     const pickImage = async () => {
         const result = await ImagePicker.launchImageLibraryAsync({
@@ -65,7 +96,7 @@ const CreateProductScreeen = () => {
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
             <View style={styles.container}>
-                <Stack.Screen options={{ title: 'Create Product' }} />
+                <Stack.Screen options={{ title: isUpdating ? 'Update Product' : 'Create Product' }} />
                 <Image
                     style={styles.image}
                     source={{ uri: image || defaultPizzaImage }}
@@ -91,7 +122,8 @@ const CreateProductScreeen = () => {
                 />
 
                 <Text style={{ color: 'red' }}>{error}</Text>
-                <Button text="Create" onPress={onCreate} />
+                <Button text={isUpdating? 'Update' : 'Create'} onPress={onSubmit} />
+                {isUpdating && <Text onPress={onConfirmDelete} style={[styles.textButton, {color: 'red'}]}>Delete</Text>}
             </View>
         </TouchableWithoutFeedback>
     );

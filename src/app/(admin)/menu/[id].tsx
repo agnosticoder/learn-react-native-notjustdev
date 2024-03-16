@@ -54,7 +54,7 @@ const ProductDetailScreen = () => {
                     title: product.name,
                     headerShown: true,
                     headerRight: () => (
-                        <Link href="/cart" asChild>
+                        <Link href={`/(admin)/menu/create?id=${id}`} asChild>
                             <Pressable>
                                 {({ pressed }) => (
                                     <FontAwesome
