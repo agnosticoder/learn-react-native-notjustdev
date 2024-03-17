@@ -4,7 +4,7 @@ import Button from '../components/Button';
 import { Link, Redirect } from 'expo-router';
 
 const index = () => {
-    // return <Redirect href='/(auth)/sign-in' />;
+    // return <Redirect href='/(user)/orders/23123' />;
     return (
         <View style={{ flex: 1, justifyContent: 'center', padding: 10 }}>
             <Link href={'/(user)'} asChild>
