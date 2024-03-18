@@ -59,7 +59,7 @@ const AuthForm = ({ isSignup }: { isSignup?: boolean }) => {
                     value={email}
                     onChangeText={setEmail}
                     style={styles.input}
-                    placeholder="Email"
+                    placeholder="johndoe@xmail.com"
                     keyboardType="email-address"
                 />
 
@@ -68,7 +68,7 @@ const AuthForm = ({ isSignup }: { isSignup?: boolean }) => {
                     value={password}
                     onChangeText={setPassword}
                     style={styles.input}
-                    placeholder="Password"
+                    placeholder=""
                     secureTextEntry
                 />
 

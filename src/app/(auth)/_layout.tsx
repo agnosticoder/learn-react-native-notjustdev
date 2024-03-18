@@ -5,3 +5,5 @@ const AuthStack = () => {
         <Stack/>
     );
 };
+
+export default AuthStack;
