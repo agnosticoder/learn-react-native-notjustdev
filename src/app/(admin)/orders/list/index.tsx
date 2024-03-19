@@ -6,7 +6,7 @@ import { FlatList, StyleSheet, View } from 'react-native';
 const Orders = () => {
     return (
         <View>
-            <Stack.Screen options={{ title: 'Orders' }} />
+            <Stack.Screen options={{ title: 'Active' }} />
             <FlatList
                 data={orders}
                 renderItem={({ item: order }) => (
