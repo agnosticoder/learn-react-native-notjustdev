@@ -2,11 +2,13 @@ import Button from '@/src/components/Button';
 import Colors from '@/src/constants/Colors';
 import { Link } from 'expo-router';
 import { useState } from 'react';
-import { Keyboard, StyleSheet, Text, TextInput, TouchableWithoutFeedback, View } from 'react-native';
+import { Alert, Keyboard, StyleSheet, Text, TextInput, TouchableWithoutFeedback, View } from 'react-native';
+import { supabase } from '@/src/lib/supabase';
 
 const AuthForm = ({ isSignup }: { isSignup?: boolean }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
 
@@ -25,21 +27,47 @@ const AuthForm = ({ isSignup }: { isSignup?: boolean }) => {
         return true;
     };
 
-    const SignIn = () => {
+    const SignIn = async () => {
+        //validate inputs
         if (!validateInputs()) return;
 
-        //Sign in
-        console.log('Signing in', { email, password });
+        //loading
+        setLoading(true);
 
+        //sign in
+        const {data, error} = await supabase.auth.signInWithPassword({email, password});
+
+        //loading
+        setLoading(false);
+
+        if(error) {
+            Alert.alert(error.message);
+            return;
+        }
+
+        //reset fields
         resetFields();
     };
 
-    const SignUp = () => {
+    const SignUp = async () => {
+        //validate inputs
         if (!validateInputs()) return;
 
-        //Sign up
-        console.log('Signing up', { email, password });
+        //loading
+        setLoading(true);
 
+        //sign up
+        const {data, error} = await supabase.auth.signUp({email, password});
+
+        //loading
+        setLoading(false);
+
+        if(error) {
+            Alert.alert(error.message);
+            return;
+        }
+
+        //reset fields
         resetFields();
     };
 
@@ -74,8 +102,9 @@ const AuthForm = ({ isSignup }: { isSignup?: boolean }) => {
 
                 <Text style={{ color: 'red' }}>{error}</Text>
                 <Button
-                    text={isSignup ? 'Sign up' : 'Sign in'}
+                    text={isSignup ? loading ? 'Signing up...' : 'Sign Up' : loading ? 'Signing in...' : 'Sign In'}
                     onPress={onSubmit}
+                    disabled={loading}
                 />
 
                 <Link
