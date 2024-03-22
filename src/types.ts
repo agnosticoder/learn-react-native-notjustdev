@@ -1,3 +1,5 @@
+import { Database } from './database.types';
+
 export type Product = {
   id: number;
   image: string | null;

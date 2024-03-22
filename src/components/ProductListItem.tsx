@@ -1,13 +1,12 @@
 import { Image, Pressable, StyleSheet } from 'react-native';
 import { Text } from './Themed';
 import Colors from '../constants/Colors';
-import type { Product } from '../types';
-import { Link, LinkProps, useSegments } from 'expo-router';
-import { z } from 'zod';
+import { Link, useSegments } from 'expo-router';
+import { Tables } from '../database.types';
 
 export const defaultPizzaImage = 'https://notjustdev-dummy.s3.us-east-2.amazonaws.com/food/default.png';
 
-const ProductListItem = ({ product }: { product: Product }) => {
+const ProductListItem = ({ product }: { product: Tables<'products'> }) => {
     const [first] = useSegments();
 
     return (

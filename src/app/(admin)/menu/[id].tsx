@@ -1,47 +1,31 @@
-import { Image, Pressable, StyleSheet, useColorScheme } from 'react-native';
+import { ActivityIndicator, Image, Pressable, StyleSheet } from 'react-native';
 import { Text, View } from '../../../components/Themed';
-import { Link, Slot, Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import products from '@/assets/data/products';
+import { Link, Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { defaultPizzaImage } from '@/src/components/ProductListItem';
 import { useState } from 'react';
-import Button from '@/src/components/Button';
 import { useCart } from '@/src/provider/CartProvider';
 import { PizzaSize } from '@/src/types';
 import { FontAwesome } from '@expo/vector-icons';
 import Colors from '@/src/constants/Colors';
+import { useProduct } from '@/src/api/products';
 
 const sizes: PizzaSize[] = ['S', 'M', 'L', 'XL'];
 
 const ProductDetailScreen = () => {
-    const { id } = useLocalSearchParams();
-    const [selectedSize, setSelectedSize] = useState<PizzaSize>('M');
-    const { items, addItem, updateQuantity } = useCart();
+    const { id: idString } = useLocalSearchParams();
+    const id = parseFloat(typeof idString === 'string' ? idString : idString[0]);
+
+    const { product, isLoading, error } = useProduct(id);
+    const [selectedSize] = useState<PizzaSize>('M');
+    const { addItem } = useCart();
     const router = useRouter();
-    const colorSchems = useColorScheme();
 
-    const product = products.find((product) => product.id.toString() === id);
+    if(isLoading) return <ActivityIndicator />;
 
-    if (!product) {
-        return (
-            <View style={styles.container}>
-                <Text>Product not found</Text>
-            </View>
-        );
-    }
+    if(error) return <Text>Failed to load products</Text>;
 
     const addToCart = () => {
         if (!product) return;
-
-        const isItemInCart = items.find(
-            (item) =>
-                item.product_id === product.id && item.size === selectedSize
-        );
-
-        if (isItemInCart) {
-            updateQuantity(isItemInCart.id, 1);
-            router.push('/cart');
-            return;
-        }
 
         addItem({ product, size: selectedSize });
         router.push('/cart');
@@ -51,7 +35,7 @@ const ProductDetailScreen = () => {
         <View style={styles.container}>
             <Stack.Screen
                 options={{
-                    title: product.name,
+                    title: product?.name,
                     headerShown: true,
                     headerRight: () => (
                         <Link href={`/(admin)/menu/create?id=${id}`} asChild>
@@ -75,11 +59,11 @@ const ProductDetailScreen = () => {
                 }}
             />
             <Image
-                source={{ uri: product.image || defaultPizzaImage }}
+                source={{ uri: product?.image || defaultPizzaImage }}
                 style={styles.image}
             />
-            <Text style={styles.title}>{product.name}</Text>
-            <Text style={styles.price}>${product.price}</Text>
+            <Text style={styles.title}>{product?.name}</Text>
+            <Text style={styles.price}>${product?.price}</Text>
         </View>
     );
 }
