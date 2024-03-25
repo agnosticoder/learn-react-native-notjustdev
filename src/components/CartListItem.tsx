@@ -6,6 +6,7 @@ import { Link } from 'expo-router';
 import { FontAwesome } from '@expo/vector-icons';
 import { useCart } from '../provider/CartProvider';
 import { defaultPizzaImage } from './ProductListItem';
+import RemoteImage from './RemoteImage';
 
 type CartListItemProps = {
   cartItem: CartItem;
@@ -15,36 +16,38 @@ const CartListItem = ({ cartItem }: CartListItemProps) => {
   const { updateQuantity } = useCart();
 
   return (
-    <View style={styles.container}>
-      <Image
-        source={{ uri: cartItem.product.image || defaultPizzaImage }}
-        style={styles.image}
-        resizeMode="contain"
-      />
-      <View style={{ flex: 1 }}>
-        <Text style={styles.title}>{cartItem.product.name}</Text>
-        <View style={styles.subtitleContainer}>
-          <Text style={styles.price}>${cartItem.product.price.toFixed(2)}</Text>
-          <Text>Size: {cartItem.size}</Text>
-        </View>
-      </View>
-      <View style={styles.quantitySelector}>
-        <FontAwesome
-          onPress={() => updateQuantity(cartItem.id, -1)}
-          name="minus"
-          color="gray"
-          style={{ padding: 5 }}
-        />
+      <View style={styles.container}>
+          <RemoteImage
+              path={cartItem.product.image}
+              fallback={defaultPizzaImage}
+              style={styles.image}
+          />
+          <View style={{ flex: 1 }}>
+              <Text style={styles.title}>{cartItem.product.name}</Text>
+              <View style={styles.subtitleContainer}>
+                  <Text style={styles.price}>
+                      ${cartItem.product.price.toFixed(2)}
+                  </Text>
+                  <Text>Size: {cartItem.size}</Text>
+              </View>
+          </View>
+          <View style={styles.quantitySelector}>
+              <FontAwesome
+                  onPress={() => updateQuantity(cartItem.id, -1)}
+                  name="minus"
+                  color="gray"
+                  style={{ padding: 5 }}
+              />
 
-        <Text style={styles.quantity}>{cartItem.quantity}</Text>
-        <FontAwesome
-          onPress={() => updateQuantity(cartItem.id, 1)}
-          name="plus"
-          color="gray"
-          style={{ padding: 5 }}
-        />
+              <Text style={styles.quantity}>{cartItem.quantity}</Text>
+              <FontAwesome
+                  onPress={() => updateQuantity(cartItem.id, 1)}
+                  name="plus"
+                  color="gray"
+                  style={{ padding: 5 }}
+              />
+          </View>
       </View>
-    </View>
   );
 };
 

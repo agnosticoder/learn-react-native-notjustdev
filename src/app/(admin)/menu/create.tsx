@@ -11,6 +11,7 @@ import * as FileSystem from 'expo-file-system';
 import { randomUUID } from 'expo-crypto';
 import { supabase } from '@/src/lib/supabase';
 import { decode } from 'base64-arraybuffer';
+import RemoteImage from '@/src/components/RemoteImage';
 
 const CreateProductScreeen = () => {
     const [name, setName] = useState('');
@@ -154,10 +155,15 @@ const CreateProductScreeen = () => {
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
             <View style={styles.container}>
-                <Stack.Screen options={{ title: isUpdating ? 'Update Product' : 'Create Product' }} />
-                <Image
+                <Stack.Screen
+                    options={{
+                        title: isUpdating ? 'Update Product' : 'Create Product',
+                    }}
+                />
+                <RemoteImage
+                    path={image}
+                    fallback={defaultPizzaImage}
                     style={styles.image}
-                    source={{ uri: image || defaultPizzaImage }}
                 />
                 <Text onPress={pickImage} style={styles.textButton}>
                     Select Image
@@ -180,8 +186,18 @@ const CreateProductScreeen = () => {
                 />
 
                 <Text style={{ color: 'red' }}>{error}</Text>
-                <Button text={isUpdating? 'Update' : 'Create'} onPress={onSubmit} />
-                {isUpdating && <Text onPress={onConfirmDelete} style={[styles.textButton, {color: 'red'}]}>Delete</Text>}
+                <Button
+                    text={isUpdating ? 'Update' : 'Create'}
+                    onPress={onSubmit}
+                />
+                {isUpdating && (
+                    <Text
+                        onPress={onConfirmDelete}
+                        style={[styles.textButton, { color: 'red' }]}
+                    >
+                        Delete
+                    </Text>
+                )}
             </View>
         </TouchableWithoutFeedback>
     );
