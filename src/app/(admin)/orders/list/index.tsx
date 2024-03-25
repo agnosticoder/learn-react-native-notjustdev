@@ -1,29 +1,25 @@
-import orders from '@/assets/data/orders';
+import { useAdminOrderList } from '@/src/api/orders';
 import OrderItem from '@/src/components/OrderItem';
 import { Stack } from 'expo-router';
-import { FlatList, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-native';
 
 const Orders = () => {
+    const {data: orders, isLoading, error} = useAdminOrderList({archived: false});
+
+    if(isLoading) return <ActivityIndicator />;
+
+    if(error) return <Text>Failed to fetch</Text>;
+
     return (
         <View>
             <Stack.Screen options={{ title: 'Active' }} />
             <FlatList
                 data={orders}
-                renderItem={({ item: order }) => (
-                    <OrderItem key={order.id} order={order} />
-                )}
+                renderItem={({ item: order }) => <OrderItem order={order} />}
                 contentContainerStyle={{ padding: 10, gap: 10 }}
             />
         </View>
     );
 };
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#eee',
-        padding: 10,
-    }
-});
 
 export default Orders;

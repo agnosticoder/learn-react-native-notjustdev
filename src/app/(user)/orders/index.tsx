@@ -1,9 +1,18 @@
 import orders from '@/assets/data/orders';
+import { useMyOrderList } from '@/src/api/orders';
+import Button from '@/src/components/Button';
 import OrderItem from '@/src/components/OrderItem';
+import { supabase } from '@/src/lib/supabase';
 import { Stack } from 'expo-router';
-import { FlatList, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-native';
 
 const Orders = () => {
+    const {data: orders, isLoading, error} = useMyOrderList();
+
+    if(isLoading) return <ActivityIndicator />;
+
+    if(error) return <Text>Failed to fetch</Text>;
+
     return (
         <View>
             <Stack.Screen options={{ title: 'Orders' }} />
@@ -17,13 +26,5 @@ const Orders = () => {
         </View>
     );
 };
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#eee',
-        padding: 10,
-    }
-});
 
 export default Orders;

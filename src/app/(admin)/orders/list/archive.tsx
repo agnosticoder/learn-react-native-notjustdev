@@ -1,9 +1,19 @@
-import orders from '@/assets/data/orders';
+import { useAdminOrderList } from '@/src/api/orders';
 import OrderItem from '@/src/components/OrderItem';
 import { Stack } from 'expo-router';
-import { FlatList, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-native';
 
 const Archive = () => {
+    const {
+        data: orders,
+        isLoading,
+        error,
+    } = useAdminOrderList({ archived: true });
+
+    if (isLoading) return <ActivityIndicator />;
+
+    if (error) return <Text>Failed to fetch</Text>;
+
     return (
         <View>
             <Stack.Screen options={{ title: 'Archive' }} />
@@ -17,13 +27,5 @@ const Archive = () => {
         </View>
     );
 };
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#eee',
-        padding: 10,
-    }
-});
 
 export default Archive;

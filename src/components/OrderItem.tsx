@@ -1,6 +1,6 @@
 import { Link, useSegments } from 'expo-router';
-import { Order } from '../types';
 import { Text, Pressable, StyleSheet, View } from 'react-native';
+import { Tables } from '../database.types';
 
 const timeSince = (date: string) => {
     const seconds = Math.floor((Date.now() - Date.parse(date)) / 1000);
@@ -28,7 +28,7 @@ const timeSince = (date: string) => {
     return Math.floor(seconds) + ' seconds';
 };
 
-const OrderItem = ({ order }: { order: Order }) => {
+const OrderItem = ({ order }: { order: Tables<'orders'> }) => {
     const segment = useSegments();
 
     return (

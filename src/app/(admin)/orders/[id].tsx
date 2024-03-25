@@ -1,17 +1,32 @@
-import orders from '@/assets/data/orders';
+import { useOrderDetails, useUpdateOrder } from '@/src/api/orders';
 import OrderItem from '@/src/components/OrderItem';
 import OrderItemListItem from '@/src/components/OrderItemListItem';
 import Colors from '@/src/constants/Colors';
-import { OrderStatusList } from '@/src/types';
+import { OrderStatus, OrderStatusList } from '@/src/types';
 import { Stack, useLocalSearchParams } from 'expo-router';
-import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 
 const OrderDetails = () => {
-    const { id } = useLocalSearchParams();
+    const { id: idString } = useLocalSearchParams();
+    const id = parseFloat(typeof idString === 'string' ? idString : idString[0]);
 
-    const order = orders.find((order) => order.id.toString() === id);
+    const {data: order, isLoading, error} = useOrderDetails(id);
+    const {mutate: updateOrder, isPending} = useUpdateOrder();
 
-    if (!order) return;
+    const onUpdateOrder = ({ status }: { status: OrderStatus }) => {
+        updateOrder(
+            { id, updatedFields: { status } },
+            {
+                onSuccess: () => {
+                    console.log('Order updated');
+                },
+            }
+        );
+    };
+
+    if(isLoading) return <ActivityIndicator />;
+
+    if (error || !order) return <Text>Failed to fetch</Text>;
 
     return (
         <View style={styles.container}>
@@ -20,7 +35,7 @@ const OrderDetails = () => {
             <FlatList
                 data={order.order_items}
                 renderItem={({ item }) => (
-                    <OrderItemListItem key={item.id} item={item} />
+                    <OrderItemListItem item={item} />
                 )}
                 contentContainerStyle={{ gap: 10, marginTop: 10 }}
                 ListFooterComponent={
@@ -30,9 +45,7 @@ const OrderDetails = () => {
                             {OrderStatusList.map((status) => (
                                 <Pressable
                                     key={status}
-                                    onPress={() =>
-                                        console.warn('Update status')
-                                    }
+                                    onPress={() => onUpdateOrder({status})}
                                     style={{
                                         borderColor: Colors.light.tint,
                                         borderWidth: 1,
