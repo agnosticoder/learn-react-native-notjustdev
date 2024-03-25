@@ -1,8 +1,6 @@
-import orders from '@/assets/data/orders';
 import { useMyOrderList } from '@/src/api/orders';
-import Button from '@/src/components/Button';
+import { useUpdateOrderSubscription } from '@/src/api/orders/subscriptions';
 import OrderItem from '@/src/components/OrderItem';
-import { supabase } from '@/src/lib/supabase';
 import { Stack } from 'expo-router';
 import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-native';
 

@@ -40,9 +40,14 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 
         fetchSession();
 
-        supabase.auth.onAuthStateChange((event, session) => {
+        const {data: authListener} = supabase.auth.onAuthStateChange((event, session) => {
             setSession(session);
         });
+
+        return () => {
+            authListener.subscription.unsubscribe();
+        };
+        
     }, []);
 
     const isAdmin = profile?.group === 'ADMIN';
