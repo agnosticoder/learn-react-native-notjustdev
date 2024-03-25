@@ -3,6 +3,7 @@ import { Text } from './Themed';
 import Colors from '../constants/Colors';
 import { Link, useSegments } from 'expo-router';
 import { Tables } from '../database.types';
+import RemoteImage from './RemoteImage';
 
 export const defaultPizzaImage = 'https://notjustdev-dummy.s3.us-east-2.amazonaws.com/food/default.png';
 
@@ -14,9 +15,10 @@ const ProductListItem = ({ product }: { product: Tables<'products'> }) => {
             {/* @ts-ignore */}
             <Link href={`/${first}/menu/${product.id}`} asChild>
                 <Pressable style={styles.container}>
-                    <Image
-                        source={{ uri: product.image || defaultPizzaImage }}
+                    <RemoteImage
                         style={styles.image}
+                        path={product.image}
+                        fallback={defaultPizzaImage}
                     />
                     <Text style={styles.title}>{product.name}</Text>
                     <Text style={styles.price}>${product.price}</Text>

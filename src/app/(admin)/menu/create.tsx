@@ -7,6 +7,10 @@ import { Alert, Image, Keyboard, StyleSheet, TextInput, TouchableWithoutFeedback
 import * as ImagePicker from 'expo-image-picker';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useCreateProduct, useDeleteProduct, useProduct, useUpdateProduct } from '@/src/api/products';
+import * as FileSystem from 'expo-file-system';
+import { randomUUID } from 'expo-crypto';
+import { supabase } from '@/src/lib/supabase';
+import { decode } from 'base64-arraybuffer';
 
 const CreateProductScreeen = () => {
     const [name, setName] = useState('');
@@ -54,12 +58,14 @@ const CreateProductScreeen = () => {
         return true;
     };
 
-    const onCreate = () => {
+    const onCreate = async () => {
         if (!validateInput()) return;
+
+        const imagePath = await uploadImage();
 
         //Save in the Database
         createProduct(
-            { name, price: parseFloat(price), image },
+            { name, price: parseFloat(price), image:imagePath },
             {
                 onSuccess: () => {
                     resetFields();
@@ -69,12 +75,14 @@ const CreateProductScreeen = () => {
         );
     };
 
-    const onUpdate = () => {
+    const onUpdate = async () => {
         if (!validateInput()) return;
+
+        const imagePath = await uploadImage();
 
         //Save in the Database
         updateProduct(
-            { id, name, price: parseFloat(price), image },
+            { id, name, price: parseFloat(price), image:imagePath },
             {
                 onSuccess: () => {
                     resetFields();
@@ -122,6 +130,26 @@ const CreateProductScreeen = () => {
 
         setImage(result.assets[0].uri);
     }
+
+    const uploadImage = async () => {
+        if (!image?.startsWith('file://')) {
+            return;
+        }
+
+        const base64 = await FileSystem.readAsStringAsync(image, {
+            encoding: 'base64',
+        });
+        const filePath = `${randomUUID()}.png`;
+        const contentType = 'image/png';
+        const { data, error } = await supabase.storage
+            .from('product-images')
+            .upload(filePath, decode(base64), { contentType });
+
+        if (data) {
+            console.log('Image uploaded', data);
+            return data.path;
+        }
+    };
 
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>

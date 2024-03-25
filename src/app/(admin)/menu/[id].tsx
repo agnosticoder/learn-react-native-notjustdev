@@ -8,21 +8,24 @@ import { PizzaSize } from '@/src/types';
 import { FontAwesome } from '@expo/vector-icons';
 import Colors from '@/src/constants/Colors';
 import { useProduct } from '@/src/api/products';
+import RemoteImage from '@/src/components/RemoteImage';
 
 const sizes: PizzaSize[] = ['S', 'M', 'L', 'XL'];
 
 const ProductDetailScreen = () => {
     const { id: idString } = useLocalSearchParams();
-    const id = parseFloat(typeof idString === 'string' ? idString : idString[0]);
+    const id = parseFloat(
+        typeof idString === 'string' ? idString : idString[0]
+    );
 
     const { product, isLoading, error } = useProduct(id);
     const [selectedSize] = useState<PizzaSize>('M');
     const { addItem } = useCart();
     const router = useRouter();
 
-    if(isLoading) return <ActivityIndicator />;
+    if (isLoading) return <ActivityIndicator />;
 
-    if(error) return <Text>Failed to load products</Text>;
+    if (error) return <Text>Failed to load products</Text>;
 
     const addToCart = () => {
         if (!product) return;
@@ -44,9 +47,7 @@ const ProductDetailScreen = () => {
                                     <FontAwesome
                                         name="pencil"
                                         size={25}
-                                        color={
-                                            Colors.light.tint
-                                        }
+                                        color={Colors.light.tint}
                                         style={{
                                             marginRight: 15,
                                             opacity: pressed ? 0.5 : 1,
@@ -58,9 +59,10 @@ const ProductDetailScreen = () => {
                     ),
                 }}
             />
-            <Image
-                source={{ uri: product?.image || defaultPizzaImage }}
+            <RemoteImage
                 style={styles.image}
+                path={product?.image}
+                fallback={defaultPizzaImage}
             />
             <Text style={styles.title}>{product?.name}</Text>
             <Text style={styles.price}>${product?.price}</Text>

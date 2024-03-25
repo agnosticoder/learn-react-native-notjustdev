@@ -83,7 +83,7 @@ export const useUpdateProduct = () => {
             if (error) throw new Error(error.message);
             else return updatedProduct;
         },
-        onSuccess: async (_, data) => {
+        onSuccess: async (data) => {
             await queryClient.invalidateQueries({ queryKey: ['products'] });
             await queryClient.invalidateQueries({
                 queryKey: ['product', data.id],
