@@ -5,6 +5,7 @@ import { Tables } from '../database.types';
 import { useCreateOrder } from '../api/orders';
 import { useRouter } from 'expo-router';
 import { useCreateOrderItem } from '../api/order-items';
+import initializePaymentSheet, { openPaymentSheet } from '../lib/striple';
 
 type Product = Tables<'products'>;
 
@@ -69,11 +70,16 @@ const CartProvider = ({ children }: { children: ReactNode }) => {
         return acc + item.product.price * item.quantity;
     }, 0) * 100) / 100;
 
-    const checkout = () => {
+    const checkout = async () => {
+        await initializePaymentSheet(Math.floor(total * 100));
+        const paid = await openPaymentSheet();
+        console.log('Paid:', paid)
+        if(!paid) return;
+
         createOrder(
             { total },
             {
-                onSuccess: saveOrderItems
+                onSuccess: saveOrderItems,
             }
         );
     };
