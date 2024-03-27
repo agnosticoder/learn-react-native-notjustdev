@@ -2,6 +2,7 @@ import { useOrderDetails, useUpdateOrder } from '@/src/api/orders';
 import OrderItem from '@/src/components/OrderItem';
 import OrderItemListItem from '@/src/components/OrderItemListItem';
 import Colors from '@/src/constants/Colors';
+import { notifyUserAboutOrderUpdate } from '@/src/lib/notifications';
 import { OrderStatus, OrderStatusList } from '@/src/types';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
@@ -17,11 +18,13 @@ const OrderDetails = () => {
         updateOrder(
             { id, updatedFields: { status } },
             {
-                onSuccess: () => {
+                onSuccess: (updatedOrder) => {
                     console.log('Order updated');
+                    notifyUserAboutOrderUpdate(updatedOrder);
                 },
             }
         );
+
     };
 
     if(isLoading) return <ActivityIndicator />;
